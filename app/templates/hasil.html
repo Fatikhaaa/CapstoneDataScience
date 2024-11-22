@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>REWARD ELIGIBILITY CHECK</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/2.1.7/css/dataTables.dataTables.min.css"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts" />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <div class="columns is-centered">
+          <h1 class="title is-1">Reward Eligibility Check</h1>
+        </div>
+        <div class="columns is-centered">
+          <p class="subtitle">Check if customer is eligible</p>
+        </div>
+      </div>
+    </section>
+    <section class="section has-background-grey-light">
+      <nav
+        class="navbar has-background-grey-light"
+        role="navigation"
+        aria-label="main navigation"
+      >
+        <div class="navbar-menu">
+          <div class="navbar-start">
+            <a class="navbar-item"> Customer Check </a>
+            <a class="navbar-item has-background-white"> Model Check </a>
+            <a class="navbar-item"> Data Check </a>
+          </div>
+        </div>
+      </nav>
+    </section>
+
+    <section class="section">
+      <div class="columns is-centered">
+        <div style="width: 500px" id="chart"></div>
+      </div>
+      <table id="myTable" class="display">
+        <thead>
+          <tr>
+            <th>Annual Income</th>
+            <th>Spending Score</th>
+            <th>Membership Tier</th>
+            <th>Region</th>
+            <th>Reward</th>
+            <th>Cluster</th>
+            <th>Distance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%for i in range(0, len)%}
+          <tr>
+            <td>{{data_details[i]['Annual_Income']}}</td>
+            <td>{{data_details[i]['Spending_Score']}}</td>
+            <td>{{data_details[i]['Membership_Tier']}}</td>
+            <td>{{data_details[i]['Region']}}</td>
+            <td>{{data_reward[i]}}</td>
+            <td>{{data_label[i]}}</td>
+            <td>{{data_distance[i]}}</td>
+          </tr>
+          {%endfor%}
+        </tbody>
+      </table>
+    </section>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+      let table = new DataTable("#myTable", {
+        responsive: true,
+      });
+    </script>
+    <script>
+      const dataReward = {{ data_reward | tojson | safe }};
+      const mendapatRewardCount = dataReward.filter(
+        (item) => item === "Mendapat Reward"
+      ).length;
+      const tidakMendapatRewardCount = dataReward.filter(
+        (item) => item === "Tidak Mendapat Reward"
+      ).length;
+      // Konfigurasi ApexCharts untuk pie chart
+      var options = {
+        series: [mendapatRewardCount, tidakMendapatRewardCount],
+        chart: {
+          type: "pie",
+        },
+        labels: ["Mendapat Reward", "Tidak Mendapat Reward"],
+        responsive: [
+          {
+            breakpoint: 100,
+            options: {
+              chart: {
+                width: 100,
+              },
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        ],
+      };
+
+      // Render pie chart
+      var chart = new ApexCharts(document.querySelector("#chart"), options);
+      chart.render();
+    </script>
+  </body>
+</html>
